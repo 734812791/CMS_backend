@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ray.jxc.mapper.UserMapper">
+
+    <!--//根据账户名查询用户-->
+    <!--User selectUserByAccount(String account);-->
+    <select id="selectUserByAccount" resultMap="UserList">
+        select * from jxc_user where account_ = #{account}
+    </select>
+
+    <!--String selectUserRole(@Param("account") String account);-->
+    <select id="selectUserRole" resultType="String">
+        SELECT r.id_ FROM jxc_role r
+        LEFT JOIN jxc_role_user ru
+        ON r.id_ = ru.role_id_
+        JOIN jxc_user u
+        ON u.id_ = ru.user_id_
+        WHERE u.account_ = #{account}
+    </select>
+
+    <!--List selectUserList(@Param("start") int start, @Param("size") int size, @Param("account") String account);-->
+    <select id="selectUserList" resultMap="UserList">
+        select * from jxc_user WHERE account_ LIKE "%"#{account}"%" LIMIT #{start},#{size}
+    </select>
+
+    <!--int selectUserTotal(@Param("start") int start,@Param("size") int size,@Param("account") String account);-->
+    <select id="selectUserTotal" resultType="int">
+        SELECT COUNT(*) FROM jxc_user WHERE account_ LIKE "%"#{account}"%" LIMIT #{start},#{size}
+    </select>
+
+    <!--int insertUser(@Param("id") String id,@Param("account") String account,@Param("name") String name,@Param("password") String password);-->
+    <insert id="insertUser">
+        insert into jxc_user(id_,account_,password_,name_,birthday_) values(#{id},#{account},#{password},#{name},#{birthday})
+    </insert>
+
+    <!--int updateUser(@Param("id") String id,@Param("account") String account,@Param("name") String name);-->
+    <update id="updateUser">
+        update jxc_user set account_ = #{account},password_ = #{password},name_ = #{name},birthday_=#{birthday} where id_ = #{id}
+    </update>
+
+    <!--int deleteUser(@Param("id")String id);-->
+    <delete id="deleteUser">
+        delete from jxc_user where id_ = #{id}
+    </delete>
+
+
+
+
+    <resultMap id="UserList" type="User">
+        <id property="id" column="id_"></id>
+        <result property="account" column="account_"></result>
+        <result property="name" column="name_"></result>
+        <result property="password" column="password_"></result>
+        <result property="email" column="email_"></result>
+        <result property="birthday" column="birthday_"></result>
+        <result property="remark" column="remark_"></result>
+        <result property="photo" column="photo_"></result>
+        <result property="create_time" column="create_time_"></result>
+    </resultMap>
+</mapper>

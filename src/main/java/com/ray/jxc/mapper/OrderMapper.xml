@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ray.jxc.mapper.OrderMapper">
+
+    <!--int insertOrder(Order order);-->
+    <insert id="insertOrder">
+        insert into jxc_product_order VALUES (#{id},#{typeId},#{number},#{price},#{creater},#{createrId},#{orderType},#{createDate},#{status},#{reason})
+    </insert>
+
+    <!--List selectOrderList(@Param("userId") String userId, @Param("key") String key);-->
+    <select id="selectOrderList" resultMap="orderList">
+        SELECT * FROM jxc_product_order jpo
+        LEFT JOIN jxc_type jt
+        ON jpo.type_id_ = jt.id_
+        WHERE jpo.creater_id_ = #{userId}
+        AND jpo.order_type_ = #{orderType}
+        AND jt.name_ like "%"#{typeName}"%"
+        ORDER BY jpo.create_date_ DESC
+        LIMIT #{start},#{size}
+    </select>
+
+    <select id="selectAllOrderList" resultMap="orderList">
+        SELECT * FROM jxc_product_order jpo
+        LEFT JOIN jxc_type jt
+        ON jpo.type_id_ = jt.id_
+        WHERE jt.name_ like "%"#{typeName}"%"
+        and jpo.order_type_ like "%"#{orderType}"%"
+        ORDER BY jpo.create_date_ DESC
+        LIMIT #{start},#{size}
+    </select>
+
+    <!--List selectOrderTotal(@Param("userId") String userId, @Param("typeName") String typeName,@Param("start") int start,@Param("size") int size);-->
+    <select id="selectOrderTotal" resultType="int">
+        SELECT count(*) FROM jxc_product_order jpo
+        LEFT JOIN jxc_type jt
+        ON jpo.type_id_ = jt.id_
+        WHERE jpo.creater_id_ = #{userId}
+        AND jpo.order_type_ = #{orderType}
+        AND jt.name_ like "%"#{typeName}"%"
+    </select>
+
+    <select id="selectAllOrderTotal" resultType="int">
+        SELECT count(*) FROM jxc_product_order jpo
+        LEFT JOIN jxc_type jt
+        ON jpo.type_id_ = jt.id_
+        WHERE jt.name_ like "%"#{typeName}"%"
+        and jpo.order_type_ like "%"#{orderType}"%"
+    </select>
+
+    <!--int deleteOrderById(@Param("id") String id);-->
+    <delete id="deleteOrderById">
+        delete from jxc_product_order where id_ = #{id}
+    </delete>
+
+    <!--int updateOrderById(@Param("id") String id,@Param("price")int price,@Param("number")int number);-->
+    <update id="updateOrderById">
+        update jxc_product_order set price_ = #{price},number_ = #{number},status_ = #{status}
+        where id_ = #{id}
+    </update>
+
+    <update id="updateOrderStatusById">
+        update jxc_product_order set status_ = #{status},reason_ = #{reason}
+        where id_ = #{id}
+    </update>
+
+    <!--Order getOrderById(@Param("id") String id);-->
+    <select id="getOrderById" resultMap="orderList">
+        select * from jxc_product_order where id_ = #{id}
+    </select>
+
+    <!--Order getTotalByOrderId(@Param("id") String id);-->
+    <select id="getTotalByOrderId" resultType="map">
+        SELECT jp.id_,jp.total_,jp.type_id_ FROM jxc_product_order jpo
+        LEFT JOIN jxc_type jt
+        ON jpo.type_id_ = jt.id_
+        JOIN jxc_product jp
+        ON jp.type_id_ = jt.id_
+        WHERE jpo.id_ = #{id}
+    </select>
+
+    <!--int updateOrderReasonById(@Param("id") String id);-->
+    <update id="updateOrderReasonById">
+        update jxc_product_order set reason_ = #{reason}
+        where id_ = #{id}
+    </update>
+
+
+    <resultMap id="orderList" type="com.ray.jxc.pojo.Order">
+        <id column="id_" property="id"></id>
+        <result column="type_id_" property="typeId"></result>
+        <result column="number_" property="number"></result>
+        <result column="price_" property="price"></result>
+        <result column="creater_" property="creater"></result>
+        <result column="creater_id_" property="createrId"></result>
+        <result column="order_type_" property="orderType"></result>
+        <result column="create_date_" property="createDate"></result>
+        <result column="status_" property="status"></result>
+        <result column="reason_" property="reason"></result>
+        <collection property="type" ofType="com.ray.jxc.pojo.Type">
+            <id property="id" column="id_"></id>
+            <result property="name" column="name_"></result>
+            <result property="pId" column="p_id_"></result>
+            <result property="createTime" column="create_time_"></result>
+        </collection>
+    </resultMap>
+</mapper>

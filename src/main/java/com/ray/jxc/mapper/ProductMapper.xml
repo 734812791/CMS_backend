@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ray.jxc.mapper.ProductMapper">
+
+    <!--List selectProductList(String key);-->
+    <select id="selectProductList" resultMap="productList">
+        SELECT * FROM jxc_product jp
+        LEFT JOIN jxc_type jt
+        ON jt.id_ = jp.type_id_
+        WHERE jt.name_ LIKE "%"#{key}"%"
+        LIMIT #{start},#{size}
+    </select>
+
+    <!--int selectProductTotal(@Param("key") String key);-->
+    <select id="selectProductTotal" resultType="int">
+        SELECT count(*) FROM jxc_product jp
+        LEFT JOIN jxc_type jt
+        ON jt.id_ = jp.type_id_
+        WHERE jt.name_ LIKE "%"#{key}"%"
+    </select>
+
+    <!--int deleteProductById(@Param("id") String id);-->
+    <delete id="deleteProductById">
+        delete from jxc_product where id_ = #{id}
+    </delete>
+
+    <!--int deleteProductByTypeId(@Param("typeId") String typeId);-->
+    <delete id="deleteProductByTypeId">
+        delete from jxc_product where type_id_ = #{typeId}
+    </delete>
+
+    <!--int updateProductById(@Param("id") String id,@Param("total") String total);-->
+    <update id="updateProductById">
+        update jxc_product set total_ = #{total} where id_ = #{id}
+    </update>
+
+    <!--int insertProduct(@Param("id") String id,@Param("typeId") String typeId,@Param("total") int total);-->
+    <insert id="insertProduct">
+        insert into jxc_product values(#{id},#{typeId},#{total})
+    </insert>
+
+    <resultMap id="productList" type="product">
+        <id property="id" column="id_"></id>
+        <result property="typeId" column="type_id_"></result>
+        <result property="total" column="total_"></result>
+        <collection property="type" ofType="com.ray.jxc.pojo.Type">
+            <id property="id" column="id_"></id>
+            <result property="name" column="name_"></result>
+            <result property="pId" column="p_id_"></result>
+            <result property="createTime" column="create_time_"></result>
+        </collection>
+    </resultMap>
+</mapper>

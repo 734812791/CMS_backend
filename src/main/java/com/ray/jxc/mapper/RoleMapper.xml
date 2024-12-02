@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ray.jxc.mapper.RoleMapper">
+    <!--List selectRoleList();-->
+    <select id="selectRoleList" resultMap="RoleList">
+        SELECT * FROM jxc_role where name_ like "%"#{account}"%" LIMIT #{start},#{size}
+    </select>
+
+    <!--List selectRoleTotal();-->
+    <select id="selectRoleTotal" resultType="int">
+        SELECT COUNT(*) FROM jxc_role WHERE name_ LIKE "%"#{account}"%" LIMIT #{start},#{size}
+    </select>
+
+    <!--int insertRole(@Param("id") String id,@Param("name") String name,@Param("flag") String flag);-->
+    <insert id="insertRole">
+        insert into jxc_role values(#{id},#{name},#{flag})
+    </insert>
+
+    <!--int updateRole(@Param("id") String id,@Param("name") String name,@Param("flag")String flag);-->
+    <update id="updateRole">
+        update jxc_role set name_ = #{name},flag_ = #{flag} where id_ = #{id}
+    </update>
+
+    <!--int deleteRole(@Param("id") String id);-->
+    <delete id="deleteRole">
+        delete from jxc_role where id_ = #{id}
+    </delete>
+
+    <!--int insertMenuRole(@Param("id") String id,@Param("menuId") String menuId,@Param("roleId") String roleId);-->
+    <insert id="insertMenuRole">
+        insert into jxc_menu_role values(#{id},#{menuId},#{roleId})
+    </insert>
+
+    <!--int deleteMenuRoleByRoleId(@Param("roleId") String roleId);-->
+    <delete id="deleteMenuRoleByRoleId">
+        delete from jxc_menu_role where role_id_ = #{roleId}
+    </delete>
+
+    <!--List selectAllRole();-->
+    <select id="selectAllRole" resultMap="RoleList">
+        select * from jxc_role
+    </select>
+
+    <!--List selectRoleByUserId(@Param("userId") String userId);-->
+    <select id="selectRoleByUserId" resultMap="RoleList">
+        SELECT jr.id_,jr.name_,jr.flag_ FROM jxc_role jr
+        LEFT JOIN jxc_role_user jru
+        ON jr.id_ = jru.role_id_
+        JOIN jxc_user ju
+        ON ju.id_ = jru.user_id_
+        WHERE ju.id_ = #{userId}
+    </select>
+
+    <!--int deleteRoleUserByRoleId(@Param("userId") String userId);-->
+    <delete id="deleteRoleUserByRoleId">
+        delete from jxc_role_user where user_id_ = #{userId}
+    </delete>
+
+    <!--int insertRoleUser(@Param("id") String id,@Param("roleId") String roleId,@Param("userId") String userId);-->
+    <insert id="insertRoleUser">
+        insert into jxc_role_user values(#{id},#{userId},#{roleId})
+    </insert>
+
+
+    <resultMap id="RoleList" type="Role">
+        <id property="id" column="id_"></id>
+        <result property="name" column="name_"></result>
+        <result property="flag" column="flag_"></result>
+    </resultMap>
+
+</mapper>
