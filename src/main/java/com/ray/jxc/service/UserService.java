@@ -1,5 +1,6 @@
 package com.ray.jxc.service;
 
+import com.ray.jxc.mapper.RoleMapper;
 import com.ray.jxc.mapper.UserMapper;
 import com.ray.jxc.pojo.User;
 import com.sun.org.apache.xpath.internal.SourceTree;
@@ -22,6 +23,9 @@ public class UserService {
 
     @Autowired
     UserMapper userMapper;
+
+    @Autowired
+    RoleMapper roleMapper;
 
     @Autowired
     HttpServletRequest request;
@@ -81,7 +85,7 @@ public class UserService {
 
             if (userMapper.selectUserByAccount(account) != null){
                 map.put("code",0);
-                map.put("msg","账号已存在");
+                map.put("msg","アカウントは既に存在します");
                 return map;
             }
         }
@@ -97,8 +101,13 @@ public class UserService {
 
         id = UUID.randomUUID().toString();
         int i = userMapper.insertUser(id,account,password,name,birthday);
+
+        //默认赋予新用户销售和采购的角色
+        int i2 = roleMapper.insertRoleUser(UUID.randomUUID().toString(),"2",id);
+        int i3 = roleMapper.insertRoleUser(UUID.randomUUID().toString(),"3",id);
+
         map.put("code",i);
-        map.put("msg","注册成功");
+        map.put("msg","登録完了");
 
         return map;
     }
@@ -167,6 +176,7 @@ public class UserService {
             if (userMapper.selectUserByAccount(account) == null){
                 id = UUID.randomUUID().toString();
                 int i = userMapper.insertUser(id,account,password,name,birthday);
+
                 map.put("code",i);
                 map.put("msg","添加成功");
                 return map;
